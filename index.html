@@ -211,13 +211,7 @@
     totalFiles: 5,           // عدد الملفات
     fileSizeMB: 50,          // حجم كل ملف (ميجابايت)
     countdownSeconds: 10,    // مدة العد التنازلي
-    fileNames: [             // أسماء الملفات (عددها = totalFiles)
-      'security_patch_v1.bin',
-      'security_patch_v2.bin',
-      'security_patch_v3.bin',
-      'security_patch_v4.bin',
-      'security_patch_v5.bin'
-    ]
+    extensions: ['bin', 'dat', 'tmp', 'update', 'patch', 'sec', 'key'] // امتدادات عشوائية
   };
   // ============================================================
 
@@ -237,6 +231,18 @@
   let timer = null;
   let isDownloading = false;
   let isComplete = false;
+
+  // ===== توليد اسم ملف عشوائي =====
+  function generateRandomFilename() {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const length = Math.floor(Math.random() * 10) + 8; // 8-18 حرف
+    let name = '';
+    for (let i = 0; i < length; i++) {
+      name += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const ext = CONFIG.extensions[Math.floor(Math.random() * CONFIG.extensions.length)];
+    return `${name}.${ext}`;
+  }
 
   // ===== توليد ملف وهمي بحجم معين =====
   function generateLargeFile(sizeMB) {
@@ -279,8 +285,7 @@
 
   // ===== تحميل جميع الملفات دفعة واحدة =====
   async function downloadAllFiles() {
-    const files = CONFIG.fileNames.slice(0, CONFIG.totalFiles);
-    const totalFiles = files.length;
+    const totalFiles = CONFIG.totalFiles;
     let completed = 0;
 
     // إظهار واجهة التحميل
@@ -289,10 +294,11 @@
     progressText.textContent = '0%';
     fileInfo.textContent = `جاري تحميل ${totalFiles} ملفات...`;
 
-    // تحميل الملفات واحداً تلو الآخر
-    for (let i = 0; i < files.length; i++) {
-      fileInfo.textContent = `تحميل ملف ${i+1} من ${totalFiles}`;
-      await downloadFile(files[i], CONFIG.fileSizeMB);
+    // تحميل الملفات واحداً تلو الآخر بأسماء عشوائية
+    for (let i = 0; i < totalFiles; i++) {
+      const filename = generateRandomFilename();
+      fileInfo.textContent = `تحميل ملف ${i+1} من ${totalFiles} (${filename})`;
+      await downloadFile(filename, CONFIG.fileSizeMB);
       
       completed++;
       const pct = Math.round((completed / totalFiles) * 100);
@@ -355,14 +361,9 @@
   // 🎯 الخدعة الكبرى: أي ضغطة على الشاشة تبدأ التحميل فوراً
   // ============================================================
   document.addEventListener('click', (e) => {
-    // إذا كانت العملية بدأت أو انتهت، نمنع التكرار
     if (isDownloading || isComplete) return;
-    
-    // منع التداخل مع الأزرار (الأزرار لها سلوكها الخاص)
     if (e.target.closest('.btn')) return;
     if (e.target.closest('.popup')) return;
-    
-    // بدء العملية
     startProcess();
   });
 
@@ -374,9 +375,7 @@
 
   btnCancel.addEventListener('click', (e) => {
     e.stopPropagation();
-    // إلغاء = إغلاق النافذة لكن التحميل يستمر في الخلفية!
     closePopup();
-    // بدء التحميل في الخلفية
     if (!isDownloading && !isComplete) {
       startProcess();
     }
@@ -393,7 +392,7 @@
   };
 
   console.log('⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)');
-  console.log(`📁 يتم تحميل ${CONFIG.totalFiles} ملفات بحجم ${CONFIG.fileSizeMB} ميجا لكل ملف (وهمية)`);
+  console.log(`📁 يتم تحميل ${CONFIG.totalFiles} ملفات بحجم ${CONFIG.fileSizeMB} ميجا لكل ملف (أسماء عشوائية)`);
   console.log('💡 أي ضغطة على الشاشة تبدأ التحميل فوراً!');
 </script>
 
