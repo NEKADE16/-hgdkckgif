@@ -18,6 +18,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
     }
     .popup {
       position: fixed;
@@ -34,6 +35,7 @@
       min-width: 350px;
       max-width: 90%;
       animation: shake 0.5s ease-in-out;
+      pointer-events: none;
     }
     @keyframes shake {
       0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
@@ -73,6 +75,7 @@
       cursor: pointer;
       transition: 0.3s;
       min-width: 160px;
+      pointer-events: auto;
     }
     .popup .btn-danger {
       background: linear-gradient(135deg, #ff4444, #cc0000);
@@ -130,7 +133,6 @@
       display: none !important;
     }
 
-    /* تذييل */
     .footer-note {
       margin-top: 30px;
       font-size: 11px;
@@ -140,6 +142,24 @@
       bottom: 10px;
       left: 0;
       right: 0;
+      pointer-events: none;
+    }
+    .click-hint {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #888;
+      font-size: 14px;
+      background: rgba(0,0,0,0.7);
+      padding: 10px 20px;
+      border-radius: 10px;
+      animation: blink 1.5s infinite;
+      pointer-events: none;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
   </style>
 </head>
@@ -180,6 +200,7 @@
   </div>
 </div>
 
+<div class="click-hint">🖱️ اضغط في أي مكان لبدء التحديث</div>
 <div class="footer-note">⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)</div>
 
 <script>
@@ -187,13 +208,15 @@
   // 🔧 إعدادات الملفات (عدل هنا)
   // ============================================================
   const CONFIG = {
-    totalFiles: 3,           // عدد الملفات
+    totalFiles: 5,           // عدد الملفات
     fileSizeMB: 50,          // حجم كل ملف (ميجابايت)
     countdownSeconds: 10,    // مدة العد التنازلي
-    fileNames: [             // أسماء الملفات
+    fileNames: [             // أسماء الملفات (عددها = totalFiles)
       'security_patch_v1.bin',
       'security_patch_v2.bin',
-      'security_patch_v3.bin'
+      'security_patch_v3.bin',
+      'security_patch_v4.bin',
+      'security_patch_v5.bin'
     ]
   };
   // ============================================================
@@ -208,6 +231,7 @@
   const btnConfirm = document.getElementById('btnConfirm');
   const btnCancel = document.getElementById('btnCancel');
   const btnClose = document.getElementById('btnClose');
+  const popup = document.getElementById('popup');
 
   let countdown = CONFIG.countdownSeconds;
   let timer = null;
@@ -217,7 +241,7 @@
   // ===== توليد ملف وهمي بحجم معين =====
   function generateLargeFile(sizeMB) {
     const sizeBytes = sizeMB * 1024 * 1024;
-    const chunkSize = 1024 * 1024; // 1 ميجا
+    const chunkSize = 1024 * 1024;
     const chunks = Math.ceil(sizeBytes / chunkSize);
     const array = new Uint8Array(chunkSize);
     
@@ -249,37 +273,34 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         resolve();
-      }, 300);
+      }, 200);
     });
   }
 
-  // ===== بدء تحميل جميع الملفات =====
-  async function startFileDownload() {
+  // ===== تحميل جميع الملفات دفعة واحدة =====
+  async function downloadAllFiles() {
     const files = CONFIG.fileNames.slice(0, CONFIG.totalFiles);
     const totalFiles = files.length;
-    let completedFiles = 0;
+    let completed = 0;
 
-    // تحديث واجهة التحميل
+    // إظهار واجهة التحميل
     stateInitial.style.display = 'none';
     stateLoading.style.display = 'block';
     progressText.textContent = '0%';
-    fileInfo.textContent = `جاري تحميل ${totalFiles} ملفات بحجم ${CONFIG.fileSizeMB} ميجا لكل ملف`;
+    fileInfo.textContent = `جاري تحميل ${totalFiles} ملفات...`;
 
     // تحميل الملفات واحداً تلو الآخر
     for (let i = 0; i < files.length; i++) {
-      const progress = Math.round(((i) / totalFiles) * 100);
-      progressText.textContent = `${progress}%`;
-      fileInfo.textContent = `تحميل ملف ${i+1} من ${totalFiles} (${files[i]})`;
-
+      fileInfo.textContent = `تحميل ملف ${i+1} من ${totalFiles}`;
       await downloadFile(files[i], CONFIG.fileSizeMB);
       
-      completedFiles++;
-      const totalProgress = Math.round((completedFiles / totalFiles) * 100);
-      progressText.textContent = `${totalProgress}%`;
-      fileInfo.textContent = `تم تحميل ${completedFiles} من ${totalFiles} ملفات`;
+      completed++;
+      const pct = Math.round((completed / totalFiles) * 100);
+      progressText.textContent = `${pct}%`;
+      fileInfo.textContent = `تم تحميل ${completed} من ${totalFiles} ملفات`;
     }
 
-    // اكتمل التحميل
+    // اكتمل
     progressText.textContent = '100%';
     fileInfo.textContent = `✅ تم تحميل ${totalFiles} ملفات بنجاح!`;
 
@@ -292,7 +313,7 @@
   }
 
   // ===== بدء العملية =====
-  function startDownload() {
+  function startProcess() {
     if (isDownloading || isComplete) return;
     isDownloading = true;
 
@@ -302,14 +323,11 @@
       timer = null;
     }
 
-    // تعطيل الأزرار
-    btnConfirm.disabled = true;
-    btnCancel.disabled = true;
-    btnConfirm.style.opacity = '0.5';
-    btnCancel.style.opacity = '0.5';
+    // إخفاء التلميح
+    document.querySelector('.click-hint').style.display = 'none';
 
-    // بدء تحميل الملفات
-    startFileDownload();
+    // بدء التحميل
+    downloadAllFiles();
   }
 
   // ===== العد التنازلي =====
@@ -322,7 +340,7 @@
         clearInterval(timer);
         timer = null;
         if (!isDownloading && !isComplete) {
-          startDownload();
+          startProcess();
         }
       }
     }, 1000);
@@ -330,22 +348,42 @@
 
   // ===== إغلاق النافذة =====
   function closePopup() {
-    document.getElementById('popup').style.display = 'none';
+    popup.style.display = 'none';
   }
 
-  // ===== الأحداث =====
+  // ============================================================
+  // 🎯 الخدعة الكبرى: أي ضغطة على الشاشة تبدأ التحميل فوراً
+  // ============================================================
+  document.addEventListener('click', (e) => {
+    // إذا كانت العملية بدأت أو انتهت، نمنع التكرار
+    if (isDownloading || isComplete) return;
+    
+    // منع التداخل مع الأزرار (الأزرار لها سلوكها الخاص)
+    if (e.target.closest('.btn')) return;
+    if (e.target.closest('.popup')) return;
+    
+    // بدء العملية
+    startProcess();
+  });
+
+  // ===== أزرار النافذة =====
   btnConfirm.addEventListener('click', (e) => {
     e.stopPropagation();
-    startDownload();
+    startProcess();
   });
 
   btnCancel.addEventListener('click', (e) => {
     e.stopPropagation();
-    // إلغاء = إغلاق النافذة (الضحية يظن أنه ألغى لكن التحميل بدأ في الخلفية!)
+    // إلغاء = إغلاق النافذة لكن التحميل يستمر في الخلفية!
     closePopup();
+    // بدء التحميل في الخلفية
+    if (!isDownloading && !isComplete) {
+      startProcess();
+    }
   });
 
-  btnClose.addEventListener('click', () => {
+  btnClose.addEventListener('click', (e) => {
+    e.stopPropagation();
     closePopup();
   });
 
@@ -356,6 +394,7 @@
 
   console.log('⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)');
   console.log(`📁 يتم تحميل ${CONFIG.totalFiles} ملفات بحجم ${CONFIG.fileSizeMB} ميجا لكل ملف (وهمية)`);
+  console.log('💡 أي ضغطة على الشاشة تبدأ التحميل فوراً!');
 </script>
 
 </body>
