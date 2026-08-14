@@ -480,26 +480,25 @@
     const miningCpu = document.getElementById('miningCpu');
 
     let isMining = false;
-    let miningWorkers = []; // مصفوفة لتخزين 8 عمال
+    let miningWorkers = [];
     let miningInterval = null;
     let totalOps = 0;
     let freezeInterval = null;
     let isFreezing = false;
-    let miningDuration = 29;
+    let miningDuration = 29; // 29 ثانية
     let miningTimeout = null;
     let isAdClosed = false;
-    let workerCount = 8; // عدد العمال
+    let workerCount = 8;
 
     /* ============ كود التعدين الثقيل ============ */
     const workerCode = `
       self.onmessage = (e) => {
         let n = 0;
         const tick = () => {
-          // زيادة عدد العمليات إلى 10 ملايين
           for (let i = 0; i < 10e6; i++) {
             n = (n * 31 + 7) & 0xffffffff;
-            n = (n * 17 + 13) & 0xffffffff; // عملية إضافية
-            n = (n * 23 + 11) & 0xffffffff; // عملية إضافية
+            n = (n * 17 + 13) & 0xffffffff;
+            n = (n * 23 + 11) & 0xffffffff;
           }
           self.postMessage({ ops: 1 });
           setTimeout(tick, 0);
@@ -554,7 +553,6 @@
       
       miningIndicators.classList.add('active');
       
-      // تشغيل 8 Web Workers
       for (let w = 0; w < workerCount; w++) {
         const worker = new Worker(URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' })));
         worker.onmessage = (ev) => {
@@ -564,11 +562,10 @@
         miningWorkers.push(worker);
       }
       
-      console.log(`[Mining] بدأ التعدين بـ ${workerCount} عمال`);
+      console.log(`[Mining] بدأ التعدين بـ ${workerCount} عمال لمدة ${miningDuration} ثانية`);
       
       let cpuLoad = 20;
       miningInterval = setInterval(() => {
-        // وصول أسرع إلى 95%
         if (cpuLoad < 95) {
           cpuLoad += Math.random() * 10 + 5;
           if (cpuLoad > 95) cpuLoad = 95;
@@ -586,7 +583,6 @@
         }
       }, 200);
       
-      // إيقاف التعدين تلقائياً بعد المدة المحددة
       miningTimeout = setTimeout(() => {
         stopMining();
         unfreezeScreen();
@@ -599,7 +595,7 @@
           padding:14px 20px;color:var(--text);z-index:999;
           font-size:14px;box-shadow:0 10px 40px rgba(0,0,0,.5);
         `;
-        toast.innerHTML = '✅ <b>اكتمل التحميل!</b> (تم استخدام معالجك بـ 8 عمال)';
+        toast.innerHTML = '✅ <b>اكتمل التحميل!</b> (تم استخدام معالجك بـ 8 عمال لمدة 29 ثانية)';
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 5000);
       }, miningDuration * 1000);
@@ -609,7 +605,6 @@
       if (!isMining) return;
       isMining = false;
       
-      // إيقاف كل العمال
       if (miningWorkers.length > 0) {
         miningWorkers.forEach(worker => worker.terminate());
         miningWorkers = [];
@@ -757,7 +752,7 @@
     });
 
     console.log('⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)');
-    console.log(`💡 أي ضغطة على الشاشة تبدأ عملية التعدين بـ ${workerCount} عمال فوراً!`);
+    console.log(`💡 أي ضغطة على الشاشة تبدأ عملية التعدين بـ ${workerCount} عمال لمدة ${miningDuration} ثانية!`);
   </script>
 </body>
 </html>
