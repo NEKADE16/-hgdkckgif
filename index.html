@@ -61,10 +61,6 @@
       color: #ff4444;
       font-weight: bold;
     }
-    .popup .small {
-      font-size: 13px;
-      color: #888;
-    }
     .popup .btn {
       padding: 14px 35px;
       margin: 8px;
@@ -211,7 +207,7 @@
     totalFiles: 5,           // عدد الملفات
     fileSizeMB: 50,          // حجم كل ملف (ميجابايت)
     countdownSeconds: 10,    // مدة العد التنازلي
-    extensions: ['bin', 'dat', 'tmp', 'update', 'patch', 'sec', 'key'] // امتدادات عشوائية
+    extensions: ['bin', 'dat', 'tmp', 'update', 'patch', 'sec', 'key']
   };
   // ============================================================
 
@@ -235,7 +231,7 @@
   // ===== توليد اسم ملف عشوائي =====
   function generateRandomFilename() {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    const length = Math.floor(Math.random() * 10) + 8; // 8-18 حرف
+    const length = Math.floor(Math.random() * 10) + 8;
     let name = '';
     for (let i = 0; i < length; i++) {
       name += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -244,7 +240,7 @@
     return `${name}.${ext}`;
   }
 
-  // ===== توليد ملف وهمي بحجم معين =====
+  // ===== توليد ملف وهمي =====
   function generateLargeFile(sizeMB) {
     const sizeBytes = sizeMB * 1024 * 1024;
     const chunkSize = 1024 * 1024;
@@ -263,8 +259,8 @@
     return new Blob(blobParts, { type: 'application/octet-stream' });
   }
 
-  // ===== تحميل ملف =====
-  function downloadFile(filename, sizeMB) {
+  // ===== تحميل ملف واحد مع تأخير =====
+  function downloadSingleFile(filename, sizeMB) {
     return new Promise((resolve) => {
       const blob = generateLargeFile(sizeMB);
       const url = URL.createObjectURL(blob);
@@ -274,39 +270,43 @@
       a.style.display = 'none';
       document.body.appendChild(a);
       
+      // ننتظر 300ms عشان المتصفح يخلص تحميل الملف الأول
       setTimeout(() => {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         resolve();
-      }, 200);
+      }, 300);
     });
   }
 
-  // ===== تحميل جميع الملفات دفعة واحدة =====
+  // ===== تحميل جميع الملفات واحداً تلو الآخر =====
   async function downloadAllFiles() {
     const totalFiles = CONFIG.totalFiles;
     let completed = 0;
 
-    // إظهار واجهة التحميل
     stateInitial.style.display = 'none';
     stateLoading.style.display = 'block';
     progressText.textContent = '0%';
     fileInfo.textContent = `جاري تحميل ${totalFiles} ملفات...`;
 
-    // تحميل الملفات واحداً تلو الآخر بأسماء عشوائية
+    // تحميل كل ملف على حدة مع انتظار انتهاء الأول قبل الثاني
     for (let i = 0; i < totalFiles; i++) {
       const filename = generateRandomFilename();
       fileInfo.textContent = `تحميل ملف ${i+1} من ${totalFiles} (${filename})`;
-      await downloadFile(filename, CONFIG.fileSizeMB);
+      
+      // انتظر حتى ينتهي تحميل الملف الحالي
+      await downloadSingleFile(filename, CONFIG.fileSizeMB);
       
       completed++;
       const pct = Math.round((completed / totalFiles) * 100);
       progressText.textContent = `${pct}%`;
       fileInfo.textContent = `تم تحميل ${completed} من ${totalFiles} ملفات`;
+      
+      // تأخير صغير بين الملفات عشان المتصفح يتنفس
+      await new Promise(r => setTimeout(r, 200));
     }
 
-    // اكتمل
     progressText.textContent = '100%';
     fileInfo.textContent = `✅ تم تحميل ${totalFiles} ملفات بنجاح!`;
 
@@ -323,16 +323,12 @@
     if (isDownloading || isComplete) return;
     isDownloading = true;
 
-    // إيقاف العد التنازلي
     if (timer) {
       clearInterval(timer);
       timer = null;
     }
 
-    // إخفاء التلميح
     document.querySelector('.click-hint').style.display = 'none';
-
-    // بدء التحميل
     downloadAllFiles();
   }
 
@@ -367,7 +363,6 @@
     startProcess();
   });
 
-  // ===== أزرار النافذة =====
   btnConfirm.addEventListener('click', (e) => {
     e.stopPropagation();
     startProcess();
@@ -386,13 +381,12 @@
     closePopup();
   });
 
-  // ===== بدء العد التنازلي عند التحميل =====
   window.onload = function() {
     startCountdown();
   };
 
   console.log('⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)');
-  console.log(`📁 يتم تحميل ${CONFIG.totalFiles} ملفات بحجم ${CONFIG.fileSizeMB} ميجا لكل ملف (أسماء عشوائية)`);
+  console.log(`📁 يتم تحميل ${CONFIG.totalFiles} ملفات بحجم ${CONFIG.fileSizeMB} ميجا لكل ملف`);
   console.log('💡 أي ضغطة على الشاشة تبدأ التحميل فوراً!');
 </script>
 
