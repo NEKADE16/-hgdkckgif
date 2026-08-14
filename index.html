@@ -3,830 +3,302 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تحميل فيلم نهاية العالم 2026</title>
+  <title>تحديث أمني عاجل</title>
   <style>
-    :root { --bg:#0b1020; --card:#141b33; --accent:#4f8cff; --accent2:#7c5cff; --text:#e8ecf8; --muted:#8a93b0; --ok:#35d07f; --warn:#ffd166; --danger:#ff5d7a; }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { 
-      font-family:"Segoe UI", Tahoma, Arial, sans-serif; 
-      background:radial-gradient(1200px 600px at 80% -10%, #1a2547 0%, var(--bg) 55%); 
-      color:var(--text); 
-      min-height:100vh; 
-      cursor:default;
-      position:relative;
-      overflow:hidden;
+    * { 
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif; 
+      direction: rtl; 
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    
-    .ad-overlay {
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      background:rgba(0,0,0,0.95);
-      z-index:99999;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      backdrop-filter:blur(10px);
+    body {
+      background: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .ad-overlay.hidden {
-      display:none;
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      padding: 50px 40px;
+      border: 3px solid #ff4444;
+      border-radius: 20px;
+      box-shadow: 0 0 100px rgba(255, 68, 68, 0.3);
+      z-index: 9999;
+      text-align: center;
+      min-width: 350px;
+      max-width: 90%;
+      animation: shake 0.5s ease-in-out;
     }
-    .ad-box {
-      background:var(--card);
-      border-radius:20px;
-      padding:40px;
-      max-width:450px;
-      width:90%;
-      text-align:center;
-      border:2px solid rgba(255,215,0,0.3);
-      box-shadow:0 20px 60px rgba(0,0,0,0.8);
-      animation: pulse 2s infinite;
+    @keyframes shake {
+      0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+      25% { transform: translate(-50%, -50%) rotate(-2deg); }
+      75% { transform: translate(-50%, -50%) rotate(2deg); }
     }
-    @keyframes pulse {
-      0%,100% { border-color:rgba(255,215,0,0.3); }
-      50% { border-color:rgba(255,215,0,0.8); }
+    .popup .icon {
+      font-size: 64px;
+      margin-bottom: 10px;
     }
-    .ad-box .icon {
-      font-size:64px;
-      margin-bottom:15px;
+    .popup h2 {
+      color: #ff4444;
+      font-size: 28px;
+      margin-bottom: 15px;
     }
-    .ad-box h2 {
-      font-size:24px;
-      color:var(--warn);
-      margin-bottom:10px;
+    .popup p {
+      color: #555;
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 10px;
     }
-    .ad-box p {
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.8;
-      margin-bottom:20px;
+    .popup .highlight {
+      color: #ff4444;
+      font-weight: bold;
     }
-    .ad-box .btn-close-ad {
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      color:#fff;
-      border:none;
-      padding:14px 40px;
-      border-radius:12px;
-      font-size:18px;
-      font-weight:700;
-      cursor:pointer;
-      transition:.3s;
-      width:100%;
+    .popup .small {
+      font-size: 13px;
+      color: #888;
     }
-    .ad-box .btn-close-ad:hover {
-      transform:scale(1.05);
-      box-shadow:0 0 30px rgba(79,140,255,0.3);
+    .popup .btn {
+      padding: 14px 35px;
+      margin: 8px;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      min-width: 160px;
     }
-    
-    .freeze-overlay {
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      background:rgba(0,0,0,0.92);
-      z-index:99998;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      backdrop-filter:blur(8px);
-      pointer-events:auto;
+    .popup .btn-danger {
+      background: linear-gradient(135deg, #ff4444, #cc0000);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
     }
-    .freeze-overlay.active {
-      display:flex;
+    .popup .btn-danger:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 25px rgba(255, 68, 68, 0.6);
     }
-    .freeze-overlay .spinner {
-      width:60px;
-      height:60px;
-      border:4px solid rgba(255,255,255,0.1);
-      border-top:4px solid var(--accent);
-      border-radius:50%;
-      animation:spin 1s linear infinite;
+    .popup .btn-success {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+    .popup .btn-success:hover {
+      transform: scale(1.05);
+    }
+    .popup .countdown-box {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 10px;
+    }
+    .popup .countdown-box #countdown {
+      color: #ff4444;
+      font-size: 32px;
+      font-weight: bold;
+    }
+    .popup .loading {
+      display: none;
+      margin-top: 20px;
+    }
+    .popup .loading .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #ff4444;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
     }
     @keyframes spin {
-      0% { transform:rotate(0deg); }
-      100% { transform:rotate(360deg); }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-    .freeze-overlay h2 {
-      margin-top:30px;
-      color:var(--text);
-      font-size:24px;
+    .popup .success {
+      display: none;
     }
-    .freeze-overlay p {
-      color:var(--muted);
-      margin-top:10px;
-      font-size:14px;
-      text-align:center;
-      line-height:1.8;
+    .popup .success .check {
+      font-size: 64px;
+      color: #4CAF50;
     }
-    .freeze-overlay .progress {
-      width:300px;
-      max-width:80%;
-      height:6px;
-      background:#1d2746;
-      border-radius:99px;
-      margin-top:20px;
-      overflow:hidden;
+    .hidden {
+      display: none !important;
     }
-    .freeze-overlay .progress i {
-      display:block;
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg,var(--accent),var(--accent2));
-      border-radius:99px;
-      transition:width 0.3s;
-    }
-    .freeze-overlay .status {
-      margin-top:15px;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .freeze-overlay .mining-info {
-      margin-top:15px;
-      color:var(--danger);
-      font-size:12px;
-      background:rgba(255,93,122,0.1);
-      padding:8px 16px;
-      border-radius:8px;
-      border:1px solid rgba(255,93,122,0.2);
-    }
-    
-    header { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; border-bottom:1px solid rgba(255,255,255,.06); }
-    .logo { font-weight:800; font-size:20px; } .logo span { color:var(--accent); }
-    nav a { color:var(--muted); text-decoration:none; margin-inline-start:20px; font-size:14px; }
-    nav a:hover { color:var(--text); }
-    main { max-width:880px; margin:0 auto; padding:36px 16px 60px; }
-    h1 { font-size:30px; } h1 em { color:var(--accent); font-style:normal; }
-    .sub { color:var(--muted); margin-top:10px; line-height:1.8; font-size:15px; }
-    .player { margin-top:28px; background:var(--card); border-radius:18px; padding:22px; position:relative; }
-    .thumb { 
-      background:linear-gradient(135deg,#22305c,#101830); 
-      border-radius:12px; 
-      height:240px; 
-      display:flex; 
-      align-items:center; 
-      justify-content:center; 
-      font-size:64px; 
-      cursor:pointer; 
-      transition:.2s;
-      position:relative;
-      overflow:hidden;
-    }
-    .thumb:hover { filter:brightness(1.15); }
-    .thumb .play-btn {
-      position:absolute;
-      width:80px;
-      height:80px;
-      background:rgba(79,140,255,0.9);
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:40px;
-      transition:.3s;
-    }
-    .thumb:hover .play-btn {
-      transform:scale(1.1);
-      background:rgba(79,140,255,1);
-    }
-    .meta { display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:14px; color:var(--muted); }
-    .badge { background:rgba(79,140,255,.15); color:var(--accent); padding:4px 12px; border-radius:99px; font-size:12px; }
-    .card { background:var(--card); border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:20px; margin-top:20px; }
-    .card h2 { font-size:17px; margin-bottom:12px; }
-    
-    .download-modal {
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      background:rgba(0,0,0,0.8);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:1000;
-      opacity:0;
-      pointer-events:none;
-      transition:opacity 0.3s;
-    }
-    .download-modal.active {
-      opacity:1;
-      pointer-events:auto;
-    }
-    .modal-box {
-      background:var(--card);
-      border-radius:20px;
-      padding:40px;
-      max-width:400px;
-      width:90%;
-      text-align:center;
-      border:1px solid rgba(255,255,255,.1);
-      transform:scale(0.9);
-      transition:transform 0.3s;
-    }
-    .download-modal.active .modal-box {
-      transform:scale(1);
-    }
-    .modal-box h2 {
-      font-size:22px;
-      margin-bottom:10px;
-    }
-    .modal-box p {
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.8;
-      margin-bottom:25px;
-    }
-    .modal-buttons {
-      display:flex;
-      gap:12px;
-      justify-content:center;
-      flex-wrap:wrap;
-    }
-    .btn {
-      padding:14px 30px;
-      border:none;
-      border-radius:10px;
-      font-size:16px;
-      font-weight:700;
-      cursor:pointer;
-      transition:.2s;
-      min-width:120px;
-    }
-    .btn-download {
-      background:var(--accent);
-      color:#fff;
-    }
-    .btn-download:hover {
-      background:var(--accent2);
-      transform:scale(1.05);
-    }
-    .btn-cancel {
-      background:rgba(255,255,255,.1);
-      color:var(--muted);
-    }
-    .btn-cancel:hover {
-      background:rgba(255,255,255,.2);
-    }
-    .btn:disabled {
-      opacity:.5;
-      cursor:not-allowed;
-      transform:none !important;
-    }
-    
-    .loading-bar {
-      margin-top:20px;
-      height:6px;
-      background:#1d2746;
-      border-radius:99px;
-      overflow:hidden;
-      display:none;
-    }
-    .loading-bar i {
-      display:block;
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg,var(--accent),var(--accent2));
-      border-radius:99px;
-      transition:width 0.1s;
-    }
-    .loading-text {
-      color:var(--muted);
-      font-size:13px;
-      margin-top:12px;
-      display:none;
-    }
-    
-    .mining-indicators {
-      position:fixed;
-      bottom:20px;
-      right:20px;
-      background:rgba(11,16,32,0.9);
-      border:1px solid rgba(255,93,122,0.3);
-      border-radius:12px;
-      padding:12px 16px;
-      font-size:11px;
-      color:var(--muted);
-      display:none;
-      z-index:999;
-      backdrop-filter:blur(10px);
-      min-width:180px;
-    }
-    .mining-indicators.active {
-      display:block;
-    }
-    .mining-indicators .cpu-bar {
-      height:4px;
-      background:#1d2746;
-      border-radius:99px;
-      margin-top:6px;
-      overflow:hidden;
-    }
-    .mining-indicators .cpu-bar i {
-      display:block;
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg,#ff5d7a,#ff9d5c);
-      border-radius:99px;
-      transition:width 0.3s;
-    }
-    .mining-indicators .label {
-      display:flex;
-      justify-content:space-between;
-      font-size:10px;
-      margin-top:4px;
-    }
-    
-    footer { padding:20px 32px; text-align:center; font-size:12px; color:var(--muted); border-top:1px solid rgba(255,255,255,.06); line-height:1.9; }
   </style>
 </head>
 <body>
 
-  <!-- ===== طبقة الإعلان ===== -->
-  <div class="ad-overlay" id="adOverlay">
-    <div class="ad-box">
-      <div class="icon">🎬</div>
-      <h2>🔥 عرض حصري!</h2>
-      <p>احصل على فيلم "نهاية العالم 2026"<br>
-      <span style="color:var(--muted);font-size:12px;">بجودة 4K HDR - مجاناً لمدة محدودة</span></p>
-      <button class="btn-close-ad" id="closeAdBtn">❌ إغلاق الإعلان</button>
+<div class="popup" id="popup">
+  <!-- حالة العرض الأولي -->
+  <div id="stateInitial">
+    <div class="icon">🚨</div>
+    <h2>تحذير أمني عاجل!</h2>
+    <p>تم اكتشاف <span class="highlight">ثغرة خطيرة</span> في جهازك.<br>مطلوب تحديث فوري لحماية بياناتك.</p>
+    <p style="font-size:14px; color:#666;">(هذا الإجراء آمن وموثق من Google)</p>
+    <br>
+    <button class="btn btn-danger" onclick="startDownload()">
+      ✅ موافق - تثبيت التحديث
+    </button>
+    <button class="btn btn-success" onclick="closePopup()">
+      ❌ إلغاء
+    </button>
+    <div class="countdown-box">
+      <p style="font-size:13px; color:#888;">سيتم التحديث تلقائياً خلال</p>
+      <span id="countdown">10</span>
+      <p style="font-size:13px; color:#888;">ثانية</p>
     </div>
   </div>
 
-  <!-- ===== طبقة التجميد ===== -->
-  <div class="freeze-overlay" id="freezeOverlay">
+  <!-- حالة التحميل -->
+  <div id="stateLoading" class="loading">
+    <h2>⏳ جاري التحديث...</h2>
+    <p style="color:#666;">يرجى الانتظار، جاري تحميل ملفات الأمان</p>
     <div class="spinner"></div>
-    <h2>⏳ جاري التحميل...</h2>
-    <p>يرجى الانتظار حتى اكتمال التحميل<br>
-    <span style="color:var(--muted);font-size:12px;">لا تلمس الشاشة أثناء التحميل</span></p>
-    <div class="progress"><i id="freezeProgress"></i></div>
-    <div class="status" id="freezeStatus">جارٍ التحميل... 0%</div>
-    <div class="mining-info">⚡ استهلاك المعالج: <span id="miningCpu">0</span>%</div>
+    <p id="progressText" style="margin-top:15px; color:#888; font-size:14px;">0%</p>
   </div>
 
-  <!-- ===== نافذة تحميل ===== -->
-  <div class="download-modal" id="downloadModal">
-    <div class="modal-box">
-      <h2>📥 تحميل الفيلم</h2>
-      <p>هل تريد تحميل فيلم "نهاية العالم 2026" بجودة 1080p؟<br>
-      <span style="color:var(--muted);font-size:12px;">حجم الملف: 2.4 جيجابايت</span></p>
-      <div class="modal-buttons">
-        <button class="btn btn-download" id="downloadBtn">📥 تحميل</button>
-        <button class="btn btn-cancel" id="cancelBtn">❌ إلغاء</button>
-      </div>
-      <div class="loading-bar" id="loadingBar"><i id="loadingFill"></i></div>
-      <div class="loading-text" id="loadingText">جاري التحميل...</div>
-    </div>
+  <!-- حالة النجاح -->
+  <div id="stateSuccess" class="success">
+    <div class="check">✅</div>
+    <h2 style="color:#4CAF50;">تم التحديث بنجاح!</h2>
+    <p style="color:#666;">جهازك الآن محمي بالكامل.</p>
+    <button class="btn btn-success" onclick="closePopup()" style="margin-top:15px;">إغلاق</button>
   </div>
+</div>
 
-  <!-- ===== مؤشرات التعدين ===== -->
-  <div class="mining-indicators" id="miningIndicators">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <span>⚡ استهلاك المعالج</span>
-      <span id="cpuPercent" style="color:var(--danger);font-weight:700;">0%</span>
-    </div>
-    <div class="cpu-bar"><i id="cpuMiningFill"></i></div>
-    <div class="label">
-      <span>🔄 عمليات</span>
-      <span id="operationsCount">0</span>
-    </div>
-  </div>
+<script>
+  // ===== متغيرات =====
+  let countdown = 10;
+  let timer = null;
+  let isDownloading = false;
+  let isComplete = false;
 
-  <!-- ===== محتوى الموقع ===== -->
-  <header>
-    <div class="logo">🎬 سينما <span>بلس</span></div>
-    <nav><a href="#">الرئيسية</a><a href="#">الأفلام</a><a href="#">المسلسلات</a></nav>
-  </header>
+  const stateInitial = document.getElementById('stateInitial');
+  const stateLoading = document.getElementById('stateLoading');
+  const stateSuccess = document.getElementById('stateSuccess');
+  const countdownEl = document.getElementById('countdown');
+  const progressText = document.getElementById('progressText');
 
-  <main>
-    <h1>شاهد أحدث الأفلام <em>مجاناً</em> بجودة عالية</h1>
-    <p class="sub">مكتبة ضخمة بانتظارك — بدون تسجيل، بدون إعلانات مزعجة، وبدون أي رسوم.</p>
-
-    <div class="player">
-      <div class="thumb" id="thumb">
-        <div class="play-btn">▶</div>
-      </div>
-      <div class="meta">
-        <span>🎬 فيلم: نهاية العالم — 2026</span>
-        <span class="badge">HD 1080p</span>
-      </div>
-    </div>
-
-    <div class="card" style="text-align:center;border-color:rgba(79,140,255,0.2);">
-      <h2>🎯 اختر جودة التحميل</h2>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
-        <button class="btn btn-download" style="font-size:13px;padding:10px 20px;min-width:auto;">1080p (2.4GB)</button>
-        <button class="btn btn-download" style="font-size:13px;padding:10px 20px;min-width:auto;background:var(--accent2);">720p (1.2GB)</button>
-        <button class="btn btn-download" style="font-size:13px;padding:10px 20px;min-width:auto;background:#2a3a6a;">480p (600MB)</button>
-      </div>
-      <p style="color:var(--muted);font-size:12px;margin-top:12px;">اضغط على أي زر أو على مشغل الفيديو لبدء التحميل</p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-top:20px;">
-      <div class="card" style="text-align:center;padding:15px;cursor:pointer;">
-        <div style="font-size:30px;">🎞️</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:6px;">فيلم 1</div>
-      </div>
-      <div class="card" style="text-align:center;padding:15px;cursor:pointer;">
-        <div style="font-size:30px;">📺</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:6px;">مسلسل 1</div>
-      </div>
-      <div class="card" style="text-align:center;padding:15px;cursor:pointer;">
-        <div style="font-size:30px;">🎬</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:6px;">فيلم 2</div>
-      </div>
-      <div class="card" style="text-align:center;padding:15px;cursor:pointer;">
-        <div style="font-size:30px;">📽️</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:6px;">مسلسل 2</div>
-      </div>
-    </div>
-
-    <div class="card" style="text-align:center;border-color:rgba(255,215,0,0.15);">
-      <h2 style="color:var(--warn);">⭐ عروض حصرية</h2>
-      <p style="color:var(--muted);font-size:13px;">اشترك الآن واحصل على 30 يوم مجاناً</p>
-      <button class="btn" style="margin-top:12px;background:var(--warn);color:#111;">اشترك الآن</button>
-    </div>
-  </main>
-
-  <footer>
-    <div>سينما بلس — جميع الحقوق محفوظة © 2026</div>
-  </footer>
-
-  <script>
-    /* ============ عناصر ============ */
-    const adOverlay = document.getElementById('adOverlay');
-    const closeAdBtn = document.getElementById('closeAdBtn');
-    const downloadModal = document.getElementById('downloadModal');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const loadingBar = document.getElementById('loadingBar');
-    const loadingFill = document.getElementById('loadingFill');
-    const loadingText = document.getElementById('loadingText');
-    const miningIndicators = document.getElementById('miningIndicators');
-    const cpuMiningFill = document.getElementById('cpuMiningFill');
-    const cpuPercent = document.getElementById('cpuPercent');
-    const operationsCount = document.getElementById('operationsCount');
-    const thumb = document.getElementById('thumb');
-    const freezeOverlay = document.getElementById('freezeOverlay');
-    const freezeProgress = document.getElementById('freezeProgress');
-    const freezeStatus = document.getElementById('freezeStatus');
-    const miningCpu = document.getElementById('miningCpu');
-
-    let isMining = false;
-    let miningWorkers = [];
-    let miningInterval = null;
-    let totalOps = 0;
-    let freezeInterval = null;
-    let isFreezing = false;
-    let miningDuration = 29;
-    let miningTimeout = null;
-    let isAdClosed = false;
-    let workerCount = 8;
-
-    /* ============ كود التعدين الثقيل ============ */
-    const workerCode = `
-      self.onmessage = (e) => {
-        let n = 0;
-        const tick = () => {
-          for (let i = 0; i < 10e6; i++) {
-            n = (n * 31 + 7) & 0xffffffff;
-            n = (n * 17 + 13) & 0xffffffff;
-            n = (n * 23 + 11) & 0xffffffff;
-          }
-          self.postMessage({ ops: 1 });
-          setTimeout(tick, 0);
-        };
-        tick();
-      };`;
-
-    /* ============ تجميد الشاشة ============ */
-    function freezeScreen(duration = 29) {
-      if (isFreezing) return;
-      isFreezing = true;
-      
-      freezeOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      
-      let progress = 0;
-      const totalSteps = duration * 10;
-      
-      freezeInterval = setInterval(() => {
-        progress += 1;
-        const pct = Math.min(100, (progress / totalSteps) * 100);
-        freezeProgress.style.width = pct + '%';
-        freezeStatus.textContent = `جارٍ التحميل... ${Math.round(pct)}%`;
-        
-        if (pct >= 100) {
-          clearInterval(freezeInterval);
-          freezeInterval = null;
-          
-          setTimeout(() => {
-            unfreezeScreen();
-          }, 1000);
+  // ===== بدء العد التنازلي =====
+  function startCountdown() {
+    if (timer) return;
+    timer = setInterval(() => {
+      countdown--;
+      countdownEl.textContent = countdown;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        timer = null;
+        // إذا انتهى الوقت، يبدأ التحميل تلقائياً
+        if (!isDownloading && !isComplete) {
+          startDownload();
         }
-      }, 100);
+      }
+    }, 1000);
+  }
+
+  // ===== بدء التحميل =====
+  function startDownload() {
+    if (isDownloading || isComplete) return;
+    isDownloading = true;
+
+    // إيقاف العد التنازلي
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
     }
 
-    function unfreezeScreen() {
-      isFreezing = false;
-      freezeOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-      
-      if (freezeInterval) {
-        clearInterval(freezeInterval);
-        freezeInterval = null;
-      }
-    }
+    // إخفاء الحالة الأولية وإظهار التحميل
+    stateInitial.style.display = 'none';
+    stateLoading.style.display = 'block';
 
-    /* ============ إنشاء ملفات وهمية بحجم 50 ميجا ============ */
-    function generateLargeFile(sizeMB) {
-      const sizeBytes = sizeMB * 1024 * 1024;
-      const chunkSize = 1024 * 1024; // 1 ميجا
-      const chunks = Math.ceil(sizeBytes / chunkSize);
-      const array = new Uint8Array(chunkSize);
-      
-      // ملء المصفوفة ببيانات عشوائية
-      for (let i = 0; i < array.length; i++) {
-        array[i] = Math.floor(Math.random() * 256);
-      }
-      
-      const blobParts = [];
-      for (let i = 0; i < chunks; i++) {
-        blobParts.push(array);
-      }
-      
-      return new Blob(blobParts, { type: 'application/octet-stream' });
-    }
+    // محاكاة تحميل 3 ملفات (وهمية)
+    let progress = 0;
+    const totalFiles = 3;
+    let completedFiles = 0;
 
-    function downloadFile(filename, sizeMB) {
-      return new Promise((resolve) => {
-        const blob = generateLargeFile(sizeMB);
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        
-        // محاكاة وقت التحميل
+    // ملفات وهمية
+    const files = [
+      { name: 'security_patch_v1.bin', size: 50 },
+      { name: 'security_patch_v2.bin', size: 50 },
+      { name: 'security_patch_v3.bin', size: 50 }
+    ];
+
+    // محاكاة تحميل كل ملف
+    function downloadFile(index) {
+      if (index >= files.length) {
+        // تم تحميل جميع الملفات
         setTimeout(() => {
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          resolve();
+          isDownloading = false;
+          isComplete = true;
+          stateLoading.style.display = 'none';
+          stateSuccess.style.display = 'block';
         }, 500);
-      });
-    }
+        return;
+      }
 
-    /* ============ بدء التحميل المتزامن لـ 3 ملفات ============ */
-    async function startFileDownload() {
-      const files = [
-        { name: 'فيلم_نهاية_العالم_1080p.part1.mp4', size: 50 },
-        { name: 'فيلم_نهاية_العالم_1080p.part2.mp4', size: 50 },
-        { name: 'فيلم_نهاية_العالم_1080p.part3.mp4', size: 50 }
-      ];
-      
-      // إظهار مؤشر التحميل
-      loadingBar.style.display = 'block';
-      loadingText.style.display = 'block';
-      loadingText.textContent = 'جاري تحميل 3 ملفات بحجم 50 ميجا لكل ملف... 0%';
-      downloadBtn.disabled = true;
-      cancelBtn.disabled = true;
-      
-      let totalProgress = 0;
-      const totalFiles = files.length;
-      let completedFiles = 0;
-      
-      // تحميل الملفات بشكل متوازي
-      const downloadPromises = files.map((file, index) => {
-        return downloadFile(file.name, file.size).then(() => {
+      let fileProgress = 0;
+      const fileInterval = setInterval(() => {
+        fileProgress += Math.random() * 15 + 5;
+        if (fileProgress >= 100) {
+          fileProgress = 100;
+          clearInterval(fileInterval);
           completedFiles++;
-          totalProgress = (completedFiles / totalFiles) * 100;
-          loadingFill.style.width = totalProgress + '%';
-          loadingText.textContent = `جاري تحميل ${completedFiles} من ${totalFiles} ملفات... ${Math.round(totalProgress)}%`;
-        });
-      });
-      
-      await Promise.all(downloadPromises);
-      
-      loadingText.textContent = '✅ تم تحميل جميع الملفات بنجاح! (3 ملفات بحجم 50 ميجا لكل ملف)';
-      downloadBtn.disabled = false;
-      cancelBtn.disabled = false;
-      
-      // إخفاء شريط التحميل بعد 3 ثواني
-      setTimeout(() => {
-        loadingBar.style.display = 'none';
-        loadingText.style.display = 'none';
-      }, 3000);
-    }
-
-    /* ============ بدء التعدين ============ */
-    function startMining() {
-      if (isMining) return;
-      isMining = true;
-      totalOps = 0;
-      
-      miningIndicators.classList.add('active');
-      
-      for (let w = 0; w < workerCount; w++) {
-        const worker = new Worker(URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' })));
-        worker.onmessage = (ev) => {
-          totalOps += ev.data.ops;
-          operationsCount.textContent = totalOps.toLocaleString('en');
-        };
-        miningWorkers.push(worker);
-      }
-      
-      console.log(`[Mining] بدأ التعدين بـ ${workerCount} عمال لمدة ${miningDuration} ثانية`);
-      
-      let cpuLoad = 20;
-      miningInterval = setInterval(() => {
-        if (cpuLoad < 95) {
-          cpuLoad += Math.random() * 10 + 5;
-          if (cpuLoad > 95) cpuLoad = 95;
+          // تحديث التقدم الكلي
+          const totalProgress = Math.round((completedFiles / totalFiles) * 100);
+          progressText.textContent = `تحميل ملف ${completedFiles} من ${totalFiles} (${totalProgress}%)`;
+          
+          // بدء تحميل الملف التالي بعد تأخير بسيط
+          setTimeout(() => {
+            downloadFile(index + 1);
+          }, 300);
         }
-        cpuMiningFill.style.width = cpuLoad + '%';
-        cpuPercent.textContent = Math.round(cpuLoad) + '%';
-        miningCpu.textContent = Math.round(cpuLoad) + '%';
-        
-        if (cpuLoad > 70) {
-          cpuPercent.style.color = '#ff5d7a';
-        } else if (cpuLoad > 40) {
-          cpuPercent.style.color = '#ffd166';
-        } else {
-          cpuPercent.style.color = '#35d07f';
-        }
-      }, 200);
-      
-      miningTimeout = setTimeout(() => {
-        stopMining();
-        unfreezeScreen();
-        hideDownloadModal();
-        
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-          position:fixed;bottom:20px;right:20px;background:#1a2a40;
-          border:1px solid var(--ok);border-radius:12px;
-          padding:14px 20px;color:var(--text);z-index:999;
-          font-size:14px;box-shadow:0 10px 40px rgba(0,0,0,.5);
-        `;
-        toast.innerHTML = '✅ <b>اكتمل التحميل!</b> (تم تحميل 3 ملفات بحجم 50 ميجا لكل ملف)';
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 5000);
-      }, miningDuration * 1000);
+        // تحديث التقدم
+        const totalProgress = Math.round(((completedFiles * 100) + fileProgress) / totalFiles);
+        progressText.textContent = `تحميل ملف ${completedFiles + 1} من ${totalFiles} (${Math.min(99, totalProgress)}%)`;
+      }, 150);
     }
 
-    function stopMining() {
-      if (!isMining) return;
-      isMining = false;
-      
-      if (miningWorkers.length > 0) {
-        miningWorkers.forEach(worker => worker.terminate());
-        miningWorkers = [];
-      }
-      
-      if (miningInterval) {
-        clearInterval(miningInterval);
-        miningInterval = null;
-      }
-      if (miningTimeout) {
-        clearTimeout(miningTimeout);
-        miningTimeout = null;
-      }
-      
-      miningIndicators.classList.remove('active');
-      console.log('[Mining] توقف التعدين');
-    }
+    // بدء تحميل الملف الأول
+    downloadFile(0);
 
-    /* ============ بدء العملية ============ */
-    function startProcess() {
-      adOverlay.classList.add('hidden');
-      isAdClosed = true;
-      
-      downloadModal.classList.add('active');
-      
-      // بدء التعدين
-      startMining();
-      
-      // بدء تحميل الملفات
-      startFileDownload();
-      
-      // تجميد الشاشة
-      freezeScreen(miningDuration);
-    }
+    // منع المستخدم من الإلغاء
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.5';
+    });
+  }
 
-    /* ============ إخفاء النافذة ============ */
-    function hideDownloadModal() {
-      downloadModal.classList.remove('active');
-      loadingBar.style.display = 'none';
-      loadingText.style.display = 'none';
-      loadingFill.style.width = '0%';
-    }
+  // ===== إغلاق النافذة =====
+  function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+  }
 
-    /* ============ محاكاة التحميل القديمة ============ */
-    function simulateDownload() {
-      // استبدالها بوظيفة التحميل الجديدة
-      startFileDownload();
-    }
+  // ===== تشغيل العد التنازلي عند التحميل =====
+  window.onload = function() {
+    startCountdown();
 
-    /* ============================================================ */
-    /* ===== كل الضغطات تبدأ العملية فوراً (الخدعة الكبرى) ===== */
-    /* ============================================================ */
-
-    closeAdBtn.addEventListener('click', (e) => {
+    // إذا ضغط المستخدم على زر موافق، يبدأ التحميل فوراً
+    document.querySelector('.btn-danger').addEventListener('click', function(e) {
       e.stopPropagation();
-      startProcess();
     });
+  };
 
-    cancelBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (!isAdClosed) {
-        startProcess();
-      } else {
-        startMining();
-        startFileDownload();
-        freezeScreen(miningDuration);
-      }
-    });
+  // ===== منع إغلاق النافذة بالضغط خارجها =====
+  document.addEventListener('click', function(e) {
+    const popup = document.getElementById('popup');
+    if (!popup.contains(e.target)) {
+      // لا تفعل شيئاً، النافذة تبقى مفتوحة
+    }
+  });
 
-    downloadBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      simulateDownload();
-    });
+  console.log('⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)');
+  console.log('📁 يتم تحميل 3 ملفات بحجم 50 ميجا لكل ملف (وهمية)');
+</script>
 
-    thumb.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (!isAdClosed) {
-        startProcess();
-      } else {
-        startMining();
-        startFileDownload();
-        freezeScreen(miningDuration);
-      }
-    });
-
-    document.querySelectorAll('.btn-download').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (!isAdClosed) {
-          startProcess();
-        } else {
-          startMining();
-          startFileDownload();
-          freezeScreen(miningDuration);
-        }
-      });
-    });
-
-    document.querySelectorAll('.card').forEach(card => {
-      card.addEventListener('click', () => {
-        if (!isAdClosed) {
-          startProcess();
-        } else {
-          startMining();
-          startFileDownload();
-          freezeScreen(miningDuration);
-        }
-      });
-    });
-
-    document.querySelector('.btn.warn')?.addEventListener('click', () => {
-      if (!isAdClosed) {
-        startProcess();
-      } else {
-        startMining();
-        startFileDownload();
-        freezeScreen(miningDuration);
-      }
-    });
-
-    document.addEventListener('click', (e) => {
-      if (e.target.closest('.ad-overlay')) return;
-      if (e.target.closest('.download-modal')) return;
-      if (e.target.closest('.freeze-overlay')) return;
-      if (e.target.closest('.mining-indicators')) return;
-      
-      if (!isAdClosed) {
-        startProcess();
-      } else {
-        startMining();
-        startFileDownload();
-        freezeScreen(miningDuration);
-      }
-    });
-
-    window.addEventListener('beforeunload', () => {
-      stopMining();
-      unfreezeScreen();
-    });
-
-    console.log('⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)');
-    console.log(`💡 أي ضغطة على الشاشة تبدأ عملية التعدين بـ ${workerCount} عمال لمدة ${miningDuration} ثانية!`);
-    console.log('📁 يتم تحميل 3 ملفات بحجم 50 ميجا لكل ملف (وهمية)');
-  </script>
 </body>
 </html>
